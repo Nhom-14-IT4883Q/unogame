@@ -1,4 +1,3 @@
-import React from 'react'
 import React, { useEffect, useState } from 'react'
 import PACK_OF_CARDS from '../utils/packOfCards'
 import shuffleArray from '../utils/shuffleArray'
