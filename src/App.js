@@ -2,7 +2,7 @@ import './App.css'
 import { Route } from 'react-router-dom'
 import Homepage from './components/Homepage'
 import Game from './components/Game'
-
+//init
 const App = () => {
   return (
     <div className="App">
