@@ -15,8 +15,17 @@ import wildCardSound from '../assets/sounds/wild-sound.mp3'
 import draw4CardSound from '../assets/sounds/draw4-sound.mp3'
 import gameOverSound from '../assets/sounds/game-over-sound.mp3'
 
+//NUMBER CODES FOR ACTION CARDS
+//SKIP - 404
+//DRAW 2 - 252
+//WILD - 300
+//DRAW 4 WILD - 600
 
-const Game = () => {
+let socket
+const ENDPOINT = 'http://localhost:5000'
+// const ENDPOINT = 'https://uno-online-multiplayer.herokuapp.com/'
+
+const Game = (props) => {
     const data = queryString.parse(props.location.search)
 
     //initialize socket state
@@ -49,6 +58,7 @@ const Game = () => {
         }
     }, [])
 
+    //initialize game state
     const [gameOver, setGameOver] = useState(true)
     const [winner, setWinner] = useState('')
     const [turn, setTurn] = useState('')
@@ -73,6 +83,7 @@ const Game = () => {
     const [playDraw4CardSound] = useSound(draw4CardSound)
     const [playGameOverSound] = useSound(gameOverSound)
 
+    //runs once on component mount
     useEffect(() => {
         //shuffle PACK_OF_CARDS array
         const shuffledCards = shuffleArray(PACK_OF_CARDS)
@@ -290,6 +301,7 @@ const Game = () => {
                         }
                     }
                 }
+                //check for number match
                 else if(currentNumber === numberOfPlayedCard) {
                     console.log('numbers matched!')
                     //check who played the card and return new state accordingly
@@ -386,6 +398,7 @@ const Game = () => {
                 }
                 break;
             }
+            //if card played was a skip card
             case 'skipR': case 'skipG': case 'skipB': case 'skipY': {
                 //extract color of played skip card
                 const colorOfPlayedCard = played_card.charAt(4)
@@ -476,6 +489,7 @@ const Game = () => {
                         }
                     }
                 }
+                //check for number match - if skip card played on skip card
                 else if(currentNumber === 404) {
                     console.log('Numbers matched!')
                     //check who played the card and return new state accordingly
@@ -1200,12 +1214,13 @@ const Game = () => {
             }
         }
     }
-  return (
-    <div className={`Game backgroundColorR backgroundColor${currentColor}`}>
+    
+    return (
+        <div className={`Game backgroundColorR backgroundColor${currentColor}`}>
             {(!roomFull) ? <>
 
                 <div className='topInfo'>
-                    <img src={require('../assets/logo.png').default} />
+                    <img src={require('../assets/logo.png')} />
                     <h1>Game Code: {room}</h1>
                     <span>
                         <button className='game-button green' onClick={() => setSoundMuted(!isSoundMuted)}>{isSoundMuted ? <span className="material-icons">volume_off</span> : <span className="material-icons">volume_up</span>}</button>
@@ -1236,7 +1251,7 @@ const Game = () => {
                                     key={i}
                                     className='Card'
                                     onClick={() => onCardPlayedHandler(item)}
-                                    src={require(`../assets/card-back.png`).default}
+                                    src={require(`../assets/card-back.png`)}
                                     />
                             ))}
                             {turn==='Player 2' && <Spinner />}
@@ -1247,7 +1262,7 @@ const Game = () => {
                             {playedCardsPile && playedCardsPile.length>0 &&
                             <img
                                 className='Card'
-                                src={require(`../assets/cards-front/${playedCardsPile[playedCardsPile.length-1]}.png`).default}
+                                src={require(`../assets/cards-front/${playedCardsPile[playedCardsPile.length-1]}.png`)}
                                 /> }
                             <button className='game-button orange' disabled={player1Deck.length !== 2} onClick={() => {
                                 setUnoButtonPressed(!isUnoButtonPressed)
@@ -1262,7 +1277,7 @@ const Game = () => {
                                     key={i}
                                     className='Card'
                                     onClick={() => onCardPlayedHandler(item)}
-                                    src={require(`../assets/cards-front/${item}.png`).default}
+                                    src={require(`../assets/cards-front/${item}.png`)}
                                     />
                             ))}
                         </div>
@@ -1272,8 +1287,8 @@ const Game = () => {
                                 <div className="chat-head">
                                     <h2>Chat Box</h2>
                                     {!isChatBoxHidden ?
-                                    <span onClick={toggleChatBox} class="material-icons">keyboard_arrow_down</span> :
-                                    <span onClick={toggleChatBox} class="material-icons">keyboard_arrow_up</span>}
+                                    <span onClick={toggleChatBox} className="material-icons">keyboard_arrow_down</span> :
+                                    <span onClick={toggleChatBox} className="material-icons">keyboard_arrow_up</span>}
                                 </div>
                                 <div className="chat-body">
                                     <div className="msg-insert">
@@ -1296,11 +1311,12 @@ const Game = () => {
                         <div className='player1Deck' style={{pointerEvents: 'none'}}>
                             <p className='playerDeckText'>Player 1</p>
                             {player1Deck.map((item, i) => (
+                                console.log('Item:', item),
                                 <img
                                     key={i}
                                     className='Card'
                                     onClick={() => onCardPlayedHandler(item)}
-                                    src={require(`../assets/card-back.png`).default}
+                                    src={require(`../assets/card-back.png`)}
                                     />
                             ))}
                             {turn==='Player 1' && <Spinner />}
@@ -1311,7 +1327,7 @@ const Game = () => {
                             {playedCardsPile && playedCardsPile.length>0 &&
                             <img
                                 className='Card'
-                                src={require(`../assets/cards-front/${playedCardsPile[playedCardsPile.length-1]}.png`).default}
+                                src={require(`../assets/cards-front/${playedCardsPile[playedCardsPile.length-1]}.png`)}
                                 /> }
                             <button className='game-button orange' disabled={player2Deck.length !== 2} onClick={() => {
                                 setUnoButtonPressed(!isUnoButtonPressed)
@@ -1326,7 +1342,7 @@ const Game = () => {
                                     key={i}
                                     className='Card'
                                     onClick={() => onCardPlayedHandler(item)}
-                                    src={require(`../assets/cards-front/${item}.png`).default}
+                                    src={require(`../assets/cards-front/${item}.png`)}
                                     />
                             ))}
                         </div>
@@ -1336,8 +1352,8 @@ const Game = () => {
                                 <div className="chat-head">
                                     <h2>Chat Box</h2>
                                     {!isChatBoxHidden ?
-                                    <span onClick={toggleChatBox} class="material-icons">keyboard_arrow_down</span> :
-                                    <span onClick={toggleChatBox} class="material-icons">keyboard_arrow_up</span>}
+                                    <span onClick={toggleChatBox} className="material-icons">keyboard_arrow_down</span> :
+                                    <span onClick={toggleChatBox} className="material-icons">keyboard_arrow_up</span>}
                                 </div>
                                 <div className="chat-body">
                                     <div className="msg-insert">
@@ -1361,7 +1377,7 @@ const Game = () => {
             <br />
             <a href='/'><button className="game-button red">QUIT</button></a>
         </div>
-  )
+    )
 }
 
 export default Game
